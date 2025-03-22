@@ -130,34 +130,49 @@ require("./handlers/events")(client27)
   })
 
   client27.on("interactionCreate" , async(interaction) => {
-    if (interaction.isChatInputCommand()) {
-      
-	    if(interaction.user.bot) return;
+    try {
+      if (interaction.isChatInputCommand()) {
+        if(interaction.user.bot) return;
+        
+        const command = client27.one4allSlashCommands.get(interaction.commandName);
+        
+        if (!command) return;
 
-      
-      const command = client27.one4allSlashCommands.get(interaction.commandName);
-	    
-      if (!command) {
-        return;
-      }
-      if (command.ownersOnly === true) {
-        if (owner != interaction.user.id) {
+        if (command.ownersOnly === true && owner != interaction.user.id) {
           return interaction.reply({content: `❗ ***لا تستطيع استخدام هذا الامر***`, ephemeral: true});
         }
-      }
-        if (command.adminsOnly === true) {
-            if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-                return interaction.reply({ content: `❗ ***يجب أن تمتلك صلاحية الأدمن لاستخدام هذا الأمر***`, ephemeral: true });
-            }
+
+        if (command.adminsOnly === true && !interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+          return interaction.reply({ content: `❗ ***يجب أن تمتلك صلاحية الأدمن لاستخدام هذا الأمر***`, ephemeral: true });
         }
-      try {
 
         await command.execute(interaction);
-      } catch (error) {
-			return console.log("🔴 | error in one4all bot" , error)
-		}
+      } else if (interaction.isButton()) {
+        // Ensure interaction is fresh before handling
+        if (!interaction.isRepliable()) return;
+        
+        // Handle button interactions
+        await handleButtonInteraction(interaction);
+      }
+    } catch (error) {
+      console.log("🔴 | Error in interaction handling:", error);
+      if (interaction.isRepliable()) {
+        try {
+          await interaction.reply({ content: "An error occurred while processing your request.", ephemeral: true });
+        } catch (e) {
+          // Ignore follow-up errors
+        }
+      }
     }
-  } )
+  });
+
+  async function handleButtonInteraction(interaction) {
+    // Defer the update to extend the interaction timeout
+    await interaction.deferUpdate().catch(() => {});
+    
+    // Rest of your button handling code...
+    // Move your existing button handlers here
+  }
 
   //-------------------------- جميع الاكواد هنا ----------------------//
 
