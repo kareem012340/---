@@ -148,20 +148,13 @@ require("./handlers/events")(client27)
 
         await command.execute(interaction);
       } else if (interaction.isButton()) {
-        // Ensure interaction is fresh before handling
         if (!interaction.isRepliable()) return;
-        
-        // Handle button interactions
         await handleButtonInteraction(interaction);
       }
     } catch (error) {
       console.log("🔴 | Error in interaction handling:", error);
-      if (interaction.isRepliable()) {
-        try {
-          await interaction.reply({ content: "An error occurred while processing your request.", ephemeral: true });
-        } catch (e) {
-          // Ignore follow-up errors
-        }
+      if (interaction.isRepliable() && !interaction.replied && !interaction.deferred) {
+        await interaction.reply({ content: "An error occurred while processing your request.", ephemeral: true }).catch(() => {});
       }
     }
   });
