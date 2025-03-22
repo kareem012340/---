@@ -2401,4 +2401,4 @@ client27.on("guildMemberAdd" , async(member) => {
 
   //-------------------------- جميع الاكواد هنا ----------------------//
 
-client27.login(token);
+client27.login(process.env.DISCORD_TOKEN);

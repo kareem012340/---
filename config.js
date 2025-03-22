@@ -1,6 +1,5 @@
-
 module.exports = {
-  token: "MTI1OTYwOTM5MjE0MDEyODM2MA.G6BxTq.5cPvVeaGW9n_K1SPPVF8CPRMi8bn3zi0RvFbA8",
+  token: process.env.DISCORD_TOKEN, // يتم أخذ التوكن من الـ Secrets
   prefix: "!",
-  owner: "869944197472456794"
-}; 
+  owners: [process.env.OWNER_ONE, process.env.OWNER_TWO, process.env.OWNER_THREE]
+};
